@@ -1,0 +1,78 @@
+version: 2.1
+
+orbs:
+  docker: circleci/docker@2.8.2
+
+executors:
+  docker-executor:
+    docker:
+      - image: cimg/base:current
+        user: root
+
+jobs:
+  build:
+    executor: docker-executor
+    resource_class: xlarge
+    steps:
+      - checkout
+      - setup_remote_docker:
+          privileged: true  # Required for Buildx
+      - run:
+          no_output_timeout: 30m
+          name: Set up Docker Buildx
+          command: |
+            docker buildx create --use --name multiarch_builder
+            docker buildx inspect --bootstrap  # Ensures everything is set up correctly
+      - run:
+          name: Login to Docker Hub
+          command: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+      - run:
+          name: Build and Push Multi-Arch Docker Image
+          command: |
+            docker buildx build \
+              --platform linux/amd64,linux/arm64 \
+              .
+  build-and-push-multiarch:
+    executor: docker-executor
+    resource_class: xlarge
+    steps:
+      - checkout
+      - setup_remote_docker:
+          privileged: true  # Required for Buildx
+      - run:
+          no_output_timeout: 30m
+          name: Set up Docker Buildx
+          command: |
+            docker buildx create --use --name multiarch_builder
+            docker buildx inspect --bootstrap  # Ensures everything is set up correctly
+      - run:
+          name: Login to Docker Hub
+          command: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+      - run:
+          name: Build and Push Multi-Arch Docker Image
+          command: |
+            docker buildx build \
+              --platform linux/amd64,linux/arm64 \
+              --sbom=true \
+              --provenance=true \
+              --push \
+              -t honeycombio/supervised-collector:$CIRCLE_SHA1 \
+              -t honeycombio/supervised-collector:latest \
+              .
+
+workflows:
+  version: 2
+  build-and-push-workflow:
+    jobs:
+      - build:
+          context: Honeycomb Secrets for Public Repos
+          filters:
+            tags:
+              ignore: /^v.*/
+      - build-and-push-multiarch:
+          context: Honeycomb Secrets for Public Repos
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
