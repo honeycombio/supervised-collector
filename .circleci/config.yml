@@ -62,7 +62,7 @@ jobs:
 
 workflows:
   version: 2
-  build-and-push-workflow:
+  build:
     jobs:
       - build:
           context: Honeycomb Secrets for Public Repos
