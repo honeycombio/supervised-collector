@@ -27,7 +27,7 @@ jobs:
           name: Login to Docker Hub
           command: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
       - run:
-          name: Build and Push Multi-Arch Docker Image
+          name: Build Multi-Arch Docker Image
           command: |
             docker buildx build \
               --platform linux/amd64,linux/arm64 \
