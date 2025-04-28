@@ -1,0 +1,36 @@
+# GoLand IDEA
+/.idea/
+/.run/
+*.iml
+
+# VS Code
+.vscode/
+.devcontainer/
+
+# Emacs
+*~
+\#*\#
+
+# Miscellaneous files
+*.sw[op]
+*.DS_Store
+
+# Coverage
+coverage.out
+coverage.txt
+coverage.html
+
+# cache for ko-build/
+ko-cache/
+ko
+ko*.tar.gz
+
+# build output directory
+bin
+
+# test results directory
+test_results
+
+# used by opampsupervisor example
+otelcol-contrib
+output/*
