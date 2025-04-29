@@ -9,38 +9,13 @@ executors:
       - image: cimg/base:current
         user: root
 
-jobs:
-  build:
-    executor: docker-executor
-    resource_class: xlarge
+commands:
+  setup-docker-ecr-login:
+    description: "Sets up Docker, AWS cli, and calls Docker login"
     steps:
-      - checkout
       - setup_remote_docker:
-          privileged: true  # Required for Buildx
           docker_layer_caching: true
-      - run:
-          no_output_timeout: 30m
-          name: Set up Docker Buildx
-          command: |
-            docker buildx create --use --name multiarch_builder
-            docker buildx inspect --bootstrap  # Ensures everything is set up correctly
-      - run:
-          name: Login to Docker Hub
-          command: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-      - run:
-          name: Build Multi-Arch Docker Image
-          command: |
-            docker buildx build \
-              --platform linux/amd64,linux/arm64 \
-              .
-  publish-multiarch-to-ecr:
-    executor: docker-executor
-    resource_class: xlarge
-    steps:
-      - checkout
-      - setup_remote_docker:
           privileged: true  # Required for Buildx
-          docker_layer_caching: true
       - run:
           no_output_timeout: 30m
           name: Set up Docker Buildx
@@ -52,80 +27,113 @@ jobs:
           role-session-name: "supervised-collector"
           aws-region: AWS_REGION
       - run:
-          name: Login to ECR
+          name: ECR login
           command: |
-            set -x
-
-            export ECR_HOST=017118846235.dkr.ecr.us-east-1.amazonaws.com
-
             aws ecr get-login-password --region us-east-1 \
-              | docker login --username AWS --password-stdin "${ECR_HOST}"
+              | docker login --username AWS --password-stdin "017118846235.dkr.ecr.us-east-1.amazonaws.com"
+
+jobs:
+  build_docker_arm64:
+    executor: docker-executor
+    resource_class: arm.medium
+    steps:
+      - checkout
+      - setup-docker-ecr-login
+      - run:
+          name: Build Docker Image (arm64)
+          command: |
+            docker buildx build \
+              --platform linux/arm64 \
+              --sbom=true \
+              --provenance=true \
+              --push \
+              -t 017118846235.dkr.ecr.us-east-1.amazonaws.com/supervised-collector:${CIRCLE_SHA1}-arm64 \
+              .
+  build_docker_amd64:
+    executor: docker-executor
+    steps:
+      - checkout
+      - setup-docker-ecr-login
+      - run:
+          name: Build Docker Image (amd64)
+          command: |
+            docker buildx build \
+              --platform linux/amd64 \
+              --sbom=true \
+              --provenance=true \
+              --push \
+              -t 017118846235.dkr.ecr.us-east-1.amazonaws.com/supervised-collector:${CIRCLE_SHA1}-amd64 \
+              .
+  publish_docker_to_ecr:
+    executor: docker-executor
+    steps:
+      - checkout
+      - setup-docker-ecr-login
       - run:
           name: Push Multi-Arch Docker Image
           command: |
             VERSION_FROM_GIT=$(git describe --tags --match='v[0-9]*' --always)
             VERSION_FROM_GIT=${VERSION_FROM_GIT#'v'}
             
-            docker buildx build \
-              --platform linux/amd64,linux/arm64 \
-              --sbom=true \
-              --provenance=true \
-              --push \
+            docker buildx imagetools create \
               -t 017118846235.dkr.ecr.us-east-1.amazonaws.com/supervised-collector:$CIRCLE_SHA1 \
               -t 017118846235.dkr.ecr.us-east-1.amazonaws.com/supervised-collector:$VERSION_FROM_GIT \
-              .
+              017118846235.dkr.ecr.us-east-1.amazonaws.com/supervised-collector:${CIRCLE_SHA1}-amd64 \
+              017118846235.dkr.ecr.us-east-1.amazonaws.com/supervised-collector:${CIRCLE_SHA1}-arm64
 
-  publish-multiarch-to-dockerhub:
+  publish_docker_to_dockerhub:
     executor: docker-executor
-    resource_class: xlarge
     steps:
-      - checkout
-      - setup_remote_docker:
-          privileged: true  # Required for Buildx
-          docker_layer_caching: true
+      - setup-docker-ecr-login
       - run:
-          no_output_timeout: 30m
-          name: Set up Docker Buildx
+          name: Pull from ECR and Push
           command: |
-            docker buildx create --use --name multiarch_builder
-            docker buildx inspect --bootstrap  # Ensures everything is set up correctly
+            docker pull 017118846235.dkr.ecr.us-east-1.amazonaws.com/supervised-collector:$CIRCLE_SHA1-arm64
+            docker tag 017118846235.dkr.ecr.us-east-1.amazonaws.com/supervised-collector:$CIRCLE_SHA1-arm64 honeycombio/supervised-collector:$CIRCLE_SHA1-arm64
+            docker push honeycombio/supervised-collector:$CIRCLE_SHA1-arm64
+            docker pull 017118846235.dkr.ecr.us-east-1.amazonaws.com/supervised-collector:$CIRCLE_SHA1-amd64
+            docker tag 017118846235.dkr.ecr.us-east-1.amazonaws.com/supervised-collector:$CIRCLE_SHA1-amd64 honeycombio/supervised-collector:$CIRCLE_SHA1-amd64
+            docker push honeycombio/supervised-collector:$CIRCLE_SHA1-amd64
       - run:
           name: Login to Docker Hub
           command: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
       - run:
-          name: Push Multi-Arch Docker Image
+          name: Build and Push Multi-Arch Docker Image
           command: |
-            docker buildx build \
-              --platform linux/amd64,linux/arm64 \
-              --sbom=true \
-              --provenance=true \
-              --push \
+            docker buildx imagetools create \
               -t honeycombio/supervised-collector:$CIRCLE_SHA1 \
               -t honeycombio/supervised-collector:latest \
-              .
+              honeycombio/supervised-collector:$CIRCLE_SHA1-amd64 \
+              honeycombio/supervised-collector:$CIRCLE_SHA1-arm64
 
 workflows:
   version: 2
   build:
     jobs:
-      - build:
+      - build_docker_arm64:
           context: Honeycomb Secrets for Public Repos
           filters:
             tags:
-              ignore: /^v.*/
-      - publish-multiarch-to-ecr:
+              only: /.*/
+      - build_docker_amd64:
+          context: Honeycomb Secrets for Public Repos
+          filters:
+            tags:
+              only: /.*/
+      - publish_docker_to_ecr:
           context: Honeycomb Secrets for Public Repos
           requires:
-            - build
+            - build_docker_arm64
+            - build_docker_amd64
           filters:
             tags:
               only: /^v.*/
             branches:
               ignore: /pull\/.*/
-      - publish-multiarch-to-dockerhub:
+      - publish_docker_to_dockerhub:
           context: Honeycomb Secrets for Public Repos
           requires:
-            - build
+            - publish_docker_to_ecr
           filters:
             tags:
               only: /^v.*/
