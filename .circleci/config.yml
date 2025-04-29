@@ -86,6 +86,9 @@ jobs:
     steps:
       - setup-docker-ecr-login
       - run:
+          name: Login to Docker Hub
+          command: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+      - run:
           name: Pull from ECR and Push
           command: |
             docker pull 017118846235.dkr.ecr.us-east-1.amazonaws.com/supervised-collector:$CIRCLE_SHA1-arm64
@@ -94,9 +97,6 @@ jobs:
             docker pull 017118846235.dkr.ecr.us-east-1.amazonaws.com/supervised-collector:$CIRCLE_SHA1-amd64
             docker tag 017118846235.dkr.ecr.us-east-1.amazonaws.com/supervised-collector:$CIRCLE_SHA1-amd64 honeycombio/supervised-collector:$CIRCLE_SHA1-amd64
             docker push honeycombio/supervised-collector:$CIRCLE_SHA1-amd64
-      - run:
-          name: Login to Docker Hub
-          command: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
       - run:
           name: Build and Push Multi-Arch Docker Image
           command: |
