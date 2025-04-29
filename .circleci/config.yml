@@ -78,6 +78,7 @@ jobs:
             docker buildx imagetools create \
               -t 017118846235.dkr.ecr.us-east-1.amazonaws.com/supervised-collector:$CIRCLE_SHA1 \
               -t 017118846235.dkr.ecr.us-east-1.amazonaws.com/supervised-collector:$VERSION_FROM_GIT \
+              -t 017118846235.dkr.ecr.us-east-1.amazonaws.com/supervised-collector:latest \
               017118846235.dkr.ecr.us-east-1.amazonaws.com/supervised-collector:${CIRCLE_SHA1}-amd64 \
               017118846235.dkr.ecr.us-east-1.amazonaws.com/supervised-collector:${CIRCLE_SHA1}-arm64
 
@@ -91,17 +92,17 @@ jobs:
       - run:
           name: Pull from ECR and Push
           command: |
-            docker pull 017118846235.dkr.ecr.us-east-1.amazonaws.com/supervised-collector:$CIRCLE_SHA1-arm64
+            docker pull --platform linux/arm64 017118846235.dkr.ecr.us-east-1.amazonaws.com/supervised-collector:$CIRCLE_SHA1-arm64
             docker tag 017118846235.dkr.ecr.us-east-1.amazonaws.com/supervised-collector:$CIRCLE_SHA1-arm64 honeycombio/supervised-collector:$CIRCLE_SHA1-arm64
             docker push honeycombio/supervised-collector:$CIRCLE_SHA1-arm64
-            docker pull 017118846235.dkr.ecr.us-east-1.amazonaws.com/supervised-collector:$CIRCLE_SHA1-amd64
+            docker pull --platform linux/amd64 017118846235.dkr.ecr.us-east-1.amazonaws.com/supervised-collector:$CIRCLE_SHA1-amd64
             docker tag 017118846235.dkr.ecr.us-east-1.amazonaws.com/supervised-collector:$CIRCLE_SHA1-amd64 honeycombio/supervised-collector:$CIRCLE_SHA1-amd64
             docker push honeycombio/supervised-collector:$CIRCLE_SHA1-amd64
       - run:
           name: Build and Push Multi-Arch Docker Image
           command: |
             docker buildx imagetools create \
-              -t honeycombio/supervised-collector:$CIRCLE_SHA1 \
+              -t honeycombio/supervised-collector:$CIRCLE_TAG \
               -t honeycombio/supervised-collector:latest \
               honeycombio/supervised-collector:$CIRCLE_SHA1-amd64 \
               honeycombio/supervised-collector:$CIRCLE_SHA1-arm64
