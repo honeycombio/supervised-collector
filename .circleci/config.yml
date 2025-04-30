@@ -47,6 +47,12 @@ jobs:
             - run:
                 name: Login to Docker Hub
                 command: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+            - run:
+                name: Export GitHub Container Registry tag
+                command: echo "export GHCR_TAG=\"-t ghcr.io/honeycombio/supervised-collector:${CIRCLE_SHA1}-arm64\"" >> $BASH_ENV
+            - run:
+                name: Login to GitHub Container Registry
+                command: echo $GITHUB_TOKEN | docker login ghcr.io -u $GITHUB_USERNAME --password-stdin
       - run:
           name: Build Docker Image (arm64)
           command: |
@@ -57,6 +63,7 @@ jobs:
               --push \
               -t 017118846235.dkr.ecr.us-east-1.amazonaws.com/supervised-collector:${CIRCLE_SHA1}-arm64 \
               ${DOCKERHUB_TAG} \
+              ${GHCR_TAG} \
               .
   build_docker_amd64:
     executor: docker-executor
@@ -72,6 +79,12 @@ jobs:
             - run:
                 name: Login to Docker Hub
                 command: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+            - run:
+                name: Export GitHub Container Registry tag
+                command: echo "export GHCR_TAG=\"-t ghcr.io/honeycombio/supervised-collector:${CIRCLE_SHA1}-amd64\"" >> $BASH_ENV
+            - run:
+                name: Login to GitHub Container Registry
+                command: echo $GITHUB_TOKEN | docker login ghcr.io -u $GITHUB_USERNAME --password-stdin
       - run:
           name: Build Docker Image (amd64)
           command: |
@@ -82,6 +95,7 @@ jobs:
               --push \
               -t 017118846235.dkr.ecr.us-east-1.amazonaws.com/supervised-collector:${CIRCLE_SHA1}-amd64 \
               ${DOCKERHUB_TAG} \
+              ${GHCR_TAG} \
               .
   publish_docker_to_ecr:
     executor: docker-executor
@@ -117,6 +131,22 @@ jobs:
               honeycombio/supervised-collector:$CIRCLE_SHA1-amd64 \
               honeycombio/supervised-collector:$CIRCLE_SHA1-arm64
 
+  publish_docker_to_ghcr:
+    executor: docker-executor
+    steps:
+      - setup-docker-ecr-login
+      - run:
+          name: Login to GitHub Container Registry
+          command: echo $GITHUB_TOKEN | docker login ghcr.io -u $GITHUB_USERNAME --password-stdin
+      - run:
+          name: Build and Push Multi-Arch Docker Image
+          command: |
+            docker buildx imagetools create \
+              -t ghcr.io/honeycombio/supervised-collector:$CIRCLE_TAG \
+              -t ghcr.io/honeycombio/supervised-collector:latest \
+              ghcr.io/honeycombio/supervised-collector:$CIRCLE_SHA1-arm64 \
+              ghcr.io/honeycombio/supervised-collector:$CIRCLE_SHA1-amd64
+
 workflows:
   version: 2
   build:
@@ -142,6 +172,15 @@ workflows:
             branches:
               ignore: /pull\/.*/
       - publish_docker_to_dockerhub:
+          context: Honeycomb Secrets for Public Repos
+          requires:
+            - publish_docker_to_ecr
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+      - publish_docker_to_ghcr:
           context: Honeycomb Secrets for Public Repos
           requires:
             - publish_docker_to_ecr
