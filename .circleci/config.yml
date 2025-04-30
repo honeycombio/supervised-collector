@@ -14,7 +14,6 @@ commands:
     description: "Sets up Docker, AWS cli, and calls Docker login"
     steps:
       - setup_remote_docker:
-          docker_layer_caching: true
           privileged: true  # Required for Buildx
       - run:
           no_output_timeout: 30m
@@ -39,6 +38,15 @@ jobs:
     steps:
       - checkout
       - setup-docker-ecr-login
+      - when:
+          condition: << pipeline.git.tag >>
+          steps:
+            - run:
+                name: Export Dockerhub tag
+                command: echo "export DOCKERHUB_TAG=\"-t honeycombio/supervised-collector:${CIRCLE_SHA1}-arm64\"" >> $BASH_ENV
+            - run:
+                name: Login to Docker Hub
+                command: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
       - run:
           name: Build Docker Image (arm64)
           command: |
@@ -48,12 +56,22 @@ jobs:
               --provenance=true \
               --push \
               -t 017118846235.dkr.ecr.us-east-1.amazonaws.com/supervised-collector:${CIRCLE_SHA1}-arm64 \
+              ${DOCKERHUB_TAG} \
               .
   build_docker_amd64:
     executor: docker-executor
     steps:
       - checkout
       - setup-docker-ecr-login
+      - when:
+          condition: << pipeline.git.tag >>
+          steps:
+            - run:
+                name: Export Dockerhub tag
+                command: echo "export DOCKERHUB_TAG=\"-t honeycombio/supervised-collector:${CIRCLE_SHA1}-amd64\"" >> $BASH_ENV
+            - run:
+                name: Login to Docker Hub
+                command: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
       - run:
           name: Build Docker Image (amd64)
           command: |
@@ -63,6 +81,7 @@ jobs:
               --provenance=true \
               --push \
               -t 017118846235.dkr.ecr.us-east-1.amazonaws.com/supervised-collector:${CIRCLE_SHA1}-amd64 \
+              ${DOCKERHUB_TAG} \
               .
   publish_docker_to_ecr:
     executor: docker-executor
@@ -89,15 +108,6 @@ jobs:
       - run:
           name: Login to Docker Hub
           command: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-      - run:
-          name: Pull from ECR and Push
-          command: |
-            docker pull --platform linux/arm64 017118846235.dkr.ecr.us-east-1.amazonaws.com/supervised-collector:$CIRCLE_SHA1-arm64
-            docker tag 017118846235.dkr.ecr.us-east-1.amazonaws.com/supervised-collector:$CIRCLE_SHA1-arm64 honeycombio/supervised-collector:$CIRCLE_SHA1-arm64
-            docker push honeycombio/supervised-collector:$CIRCLE_SHA1-arm64
-            docker pull --platform linux/amd64 017118846235.dkr.ecr.us-east-1.amazonaws.com/supervised-collector:$CIRCLE_SHA1-amd64
-            docker tag 017118846235.dkr.ecr.us-east-1.amazonaws.com/supervised-collector:$CIRCLE_SHA1-amd64 honeycombio/supervised-collector:$CIRCLE_SHA1-amd64
-            docker push honeycombio/supervised-collector:$CIRCLE_SHA1-amd64
       - run:
           name: Build and Push Multi-Arch Docker Image
           command: |
