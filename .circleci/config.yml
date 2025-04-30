@@ -107,6 +107,31 @@ jobs:
               honeycombio/supervised-collector:$CIRCLE_SHA1-amd64 \
               honeycombio/supervised-collector:$CIRCLE_SHA1-arm64
 
+  publish_docker_to_ghcr:
+    executor: docker-executor
+    steps:
+      - setup-docker-ecr-login
+      - run:
+          name: Login to GitHub Container Registry
+          command: echo $GITHUB_TOKEN | docker login ghcr.io -u $GITHUB_USERNAME --password-stdin
+      - run:
+          name: Pull from ECR and Push
+          command: |
+            docker pull --platform linux/arm64 017118846235.dkr.ecr.us-east-1.amazonaws.com/supervised-collector:$CIRCLE_SHA1-arm64
+            docker tag 017118846235.dkr.ecr.us-east-1.amazonaws.com/supervised-collector:$CIRCLE_SHA1-arm64 ghcr.io/honeycombio/supervised-collector:$CIRCLE_SHA1-arm64
+            docker push ghcr.io/honeycombio/supervised-collector:$CIRCLE_SHA1-arm64
+            docker pull --platform linux/amd64 017118846235.dkr.ecr.us-east-1.amazonaws.com/supervised-collector:$CIRCLE_SHA1-amd64
+            docker tag 017118846235.dkr.ecr.us-east-1.amazonaws.com/supervised-collector:$CIRCLE_SHA1-amd64 ghcr.io/honeycombio/supervised-collector:$CIRCLE_SHA1-amd64
+            docker push ghcr.io/honeycombio/supervised-collector:$CIRCLE_SHA1-amd64
+      - run:
+          name: Build and Push Multi-Arch Docker Image
+          command: |
+            docker buildx imagetools create \
+              -t ghcr.io/honeycombio/supervised-collector:$CIRCLE_TAG \
+              -t ghcr.io/honeycombio/supervised-collector:latest \
+              ghcr.io/honeycombio/supervised-collector:$CIRCLE_SHA1-arm64 \
+              ghcr.io/honeycombio/supervised-collector:$CIRCLE_SHA1-amd64
+
 workflows:
   version: 2
   build:
@@ -132,6 +157,15 @@ workflows:
             branches:
               ignore: /pull\/.*/
       - publish_docker_to_dockerhub:
+          context: Honeycomb Secrets for Public Repos
+          requires:
+            - publish_docker_to_ecr
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+      - publish_docker_to_ghcr:
           context: Honeycomb Secrets for Public Repos
           requires:
             - publish_docker_to_ecr
