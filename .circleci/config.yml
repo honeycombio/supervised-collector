@@ -49,7 +49,7 @@ jobs:
                 command: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
             - run:
                 name: Export GitHub Container Registry tag
-                command: echo "export GHCR_TAG=\"-t ghcr.io/honeycombio/supervised-collector/supervised-collector:${CIRCLE_SHA1}-arm64\"" >> $BASH_ENV
+                command: echo "export GHCR_TAG=\"-t ghcr.io/honeycombio/supervised-collector:${CIRCLE_SHA1}-arm64\"" >> $BASH_ENV
             - run:
                 name: Login to GitHub Container Registry
                 command: echo $GITHUB_TOKEN | docker login ghcr.io -u $GITHUB_USERNAME --password-stdin
@@ -81,7 +81,7 @@ jobs:
                 command: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
             - run:
                 name: Export GitHub Container Registry tag
-                command: echo "export GHCR_TAG=\"-t ghcr.io/honeycombio/supervised-collector/supervised-collector:${CIRCLE_SHA1}-amd64\"" >> $BASH_ENV
+                command: echo "export GHCR_TAG=\"-t ghcr.io/honeycombio/supervised-collector:${CIRCLE_SHA1}-amd64\"" >> $BASH_ENV
             - run:
                 name: Login to GitHub Container Registry
                 command: echo $GITHUB_TOKEN | docker login ghcr.io -u $GITHUB_USERNAME --password-stdin
@@ -142,10 +142,10 @@ jobs:
           name: Build and Push Multi-Arch Docker Image
           command: |
             docker buildx imagetools create \
-              -t ghcr.io/honeycombio/supervised-collector/supervised-collector:$CIRCLE_TAG \
-              -t ghcr.io/honeycombio/supervised-collector/supervised-collector:latest \
-              ghcr.io/honeycombio/supervised-collector/supervised-collector:$CIRCLE_SHA1-arm64 \
-              ghcr.io/honeycombio/supervised-collector/supervised-collector:$CIRCLE_SHA1-amd64
+              -t ghcr.io/honeycombio/supervised-collector:$CIRCLE_TAG \
+              -t ghcr.io/honeycombio/supervised-collector:latest \
+              ghcr.io/honeycombio/supervised-collector:$CIRCLE_SHA1-arm64 \
+              ghcr.io/honeycombio/supervised-collector:$CIRCLE_SHA1-amd64
 
 workflows:
   version: 2
