@@ -8,7 +8,6 @@ dist:
 extensions:
   - gomod: go.opentelemetry.io/collector/extension/zpagesextension v0.127.0
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/extension/healthcheckextension v0.127.0
-  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/extension/k8sleaderelector v0.127.0
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/extension/opampextension v0.127.0
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/extension/pprofextension v0.127.0
   - gomod: github.com/honeycombio/opentelemetry-collector-configs/honeycombextension v0.0.0-20250529172854-29e92f8bd7cb
@@ -21,40 +20,20 @@ exporters:
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/exporter/awss3exporter v0.127.0
 
 processors:
-  - gomod: go.opentelemetry.io/collector/processor/batchprocessor v0.127.0
   - gomod: go.opentelemetry.io/collector/processor/memorylimiterprocessor v0.127.0
-  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/attributesprocessor v0.127.0
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/filterprocessor v0.127.0
-  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/k8sattributesprocessor v0.127.0
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/logdedupprocessor v0.127.0
-  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/resourcedetectionprocessor v0.123.0
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/transformprocessor v0.127.0
   - gomod: github.com/honeycombio/opentelemetry-collector-configs/usageprocessor v0.0.0-20250529172854-29e92f8bd7cb
 
 receivers:
   - gomod: go.opentelemetry.io/collector/receiver/nopreceiver v0.127.0
   - gomod: go.opentelemetry.io/collector/receiver/otlpreceiver v0.127.0
-  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/filelogreceiver v0.127.0
-  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver v0.127.0
-  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/jaegerreceiver v0.127.0
-  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sclusterreceiver v0.127.0
-  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/k8sobjectsreceiver v0.127.0
-  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kafkareceiver v0.127.0
-  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kubeletstatsreceiver v0.127.0
-  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/libhoneyreceiver v0.127.0
-  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/zipkinreceiver v0.127.0
 
-connectors:
-  - gomod: go.opentelemetry.io/collector/connector/forwardconnector v0.127.0
-  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/connector/routingconnector v0.127.0
 
 providers:
   - gomod: go.opentelemetry.io/collector/confmap/provider/envprovider v1.33.0
   - gomod: go.opentelemetry.io/collector/confmap/provider/fileprovider v1.33.0
-  - gomod: go.opentelemetry.io/collector/confmap/provider/httpprovider v1.33.0
-  - gomod: go.opentelemetry.io/collector/confmap/provider/httpsprovider v1.33.0
-  - gomod: go.opentelemetry.io/collector/confmap/provider/yamlprovider v1.33.0
-  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/confmap/provider/s3provider v0.127.0
 
 # When using `make genotelcontribcol`, a `replaces` section is appended to this
 # file before passing it to OCB, to ensure that local versions are used for all
