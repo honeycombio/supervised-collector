@@ -8,13 +8,14 @@ RUN builder --config builder-config.yaml
 # use the official upstream image for the opampsupervisor
 FROM ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-opampsupervisor AS opampsupervisor
 
-FROM alpine:latest as alpine
+FROM busybox:stable as busybox
 
 FROM gcr.io/distroless/cc
 
 # Copy in some stuff so we can shell and look around
-COPY --from=alpine /bin/sh /bin/sh
+COPY --from=busybox /bin/sh /bin/sh
 COPY --from=busybox /bin/cat /bin/cat
+COPY --from=busybox /bin/ls /bin/ls
 
 ARG USER_UID=10001
 ARG USER_GID=10001
@@ -22,5 +23,7 @@ USER ${USER_UID}:${USER_GID}
 
 COPY --from=opampsupervisor --chmod=755 /usr/local/bin/opampsupervisor /opampsupervisor
 COPY --from=build --chmod=755 /go/src/supervised-collector/supervised-collector /honeycomb-otelcol
+COPY --from=build /go/pkg/mod/github.com/honeycombio/ /go/pkg/mod/github.com/honeycombio/
+
 WORKDIR /var/lib/otelcol/supervisor
 ENTRYPOINT ["/opampsupervisor"]
