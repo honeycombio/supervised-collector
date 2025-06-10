@@ -9,7 +9,7 @@ RUN builder --config builder-config.yaml
 # use the official upstream image for the opampsupervisor
 FROM ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-opampsupervisor AS opampsupervisor
 
-FROM alpine:latest
+FROM gcr.io/distroless/cc
 
 ARG USER_UID=10001
 ARG USER_GID=10001
