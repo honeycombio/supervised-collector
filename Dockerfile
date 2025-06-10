@@ -10,7 +10,7 @@ FROM ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-colle
 
 FROM busybox:stable as busybox
 
-FROM gcr.io/distroless/cc
+FROM honeycombio/honeycomb-opentelemetry-collector:latest
 
 # Copy in some stuff so we can shell and look around
 COPY --from=busybox /bin/sh /bin/sh
@@ -23,7 +23,6 @@ USER ${USER_UID}:${USER_GID}
 
 COPY --from=opampsupervisor --chmod=755 /usr/local/bin/opampsupervisor /opampsupervisor
 COPY --from=build --chmod=755 /go/src/supervised-collector/supervised-collector /honeycomb-otelcol
-COPY --from=build /go/pkg/mod/github.com/honeycombio/ /go/pkg/mod/github.com/honeycombio/
 
 WORKDIR /var/lib/otelcol/supervisor
 ENTRYPOINT ["/opampsupervisor"]
