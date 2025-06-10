@@ -8,10 +8,9 @@ RUN builder --config builder-config.yaml
 # use the official upstream image for the opampsupervisor
 FROM ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-opampsupervisor AS opampsupervisor
 
-FROM busybox:stable as busybox
+FROM busybox:stable AS busybox
 
 FROM honeycombio/honeycomb-opentelemetry-collector:latest
-
 # Copy in some stuff so we can shell and look around
 COPY --from=busybox /bin/sh /bin/sh
 COPY --from=busybox /bin/cat /bin/cat
