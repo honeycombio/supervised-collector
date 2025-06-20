@@ -21,6 +21,7 @@ exporters:
 
 processors:
   - gomod: go.opentelemetry.io/collector/processor/memorylimiterprocessor v0.128.0
+  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/attributesprocessor v0.128.0
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/filterprocessor v0.128.0
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/logdedupprocessor v0.128.0
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/redactionprocessor v0.128.0
