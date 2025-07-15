@@ -6,7 +6,7 @@ RUN go install go.opentelemetry.io/collector/cmd/builder@v0.129.0
 RUN builder --config builder-config.yaml
 
 # use the official upstream image for the opampsupervisor
-FROM ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-opampsupervisor:0.129.0 AS opampsupervisor
+FROM ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-opampsupervisor:0.128.0 AS opampsupervisor
 
 FROM honeycombio/honeycomb-opentelemetry-collector:v0.0.14
 
