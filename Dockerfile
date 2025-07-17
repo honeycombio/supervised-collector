@@ -16,6 +16,8 @@ USER ${USER_UID}:${USER_GID}
 
 COPY --from=opampsupervisor --chmod=755 /usr/local/bin/opampsupervisor /opampsupervisor
 COPY --from=build --chmod=755 /go/src/supervised-collector/supervised-collector /honeycomb-otelcol
+COPY ./config/agent.yaml /etc/agent.yaml
+COPY ./config/opampsupervisor.yaml /etc/opampsupervisor.yaml
 
 WORKDIR /var/lib/otelcol/supervisor
 ENTRYPOINT ["/opampsupervisor"]

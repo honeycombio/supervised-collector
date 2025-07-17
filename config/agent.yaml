@@ -1,0 +1,22 @@
+service:
+  telemetry:
+    metrics:
+      readers:
+        - periodic:
+            exporter:
+              otlp:
+                endpoint: ${env:HONEYCOMB_API}
+                headers:
+                  x-honeycomb-dataset: primary-collector-metrics
+                  x-honeycomb-team: ${env:HONEYCOMB_API_KEY}
+                protocol: http/protobuf
+    logs:
+      encoding: json
+      processors:
+        - batch:
+            exporter:
+              otlp:
+                endpoint: ${env:HONEYCOMB_API}
+                headers:
+                  x-honeycomb-team: ${env:HONEYCOMB_API_KEY}
+                protocol: http/protobuf
