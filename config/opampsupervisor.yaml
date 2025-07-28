@@ -1,0 +1,48 @@
+server:
+  endpoint: ${OPAMP_ENDPOINT}
+  tls:
+    insecure_skip_verify: true
+    insecure: true
+
+capabilities:
+  reports_effective_config: true
+  reports_own_metrics: true
+  reports_health: true
+  accepts_remote_config: true
+  reports_remote_config: true
+
+agent:
+  executable: /honeycomb-otelcol
+  config_apply_timeout: 5s
+  config_files:
+    - /etc/agent.yaml
+  description:
+    identifying_attributes:
+      service.name: primary-collector
+      service.namespace: htp.collector
+
+storage:
+  directory: /tmp
+
+telemetry:
+  logs:
+    level: debug
+    processors:
+      - batch:
+          exporter:
+            otlp:
+              protocol: http/protobuf
+              endpoint: ${HONEYCOMB_API}
+              headers:
+                - name: "x-honeycomb-team"
+                  value: ${HONEYCOMB_API_KEY}
+  traces:
+    processors:
+      - batch:
+          exporter:
+            otlp:
+              protocol: http/protobuf
+              endpoint: ${HONEYCOMB_API}
+              headers:
+                - name: "x-honeycomb-team"
+                  value: ${HONEYCOMB_API_KEY}
