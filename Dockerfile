@@ -1,6 +1,8 @@
 FROM golang:1.24 AS build
 WORKDIR /go/src
 
+ADD ./enhance-indexing-s3-exporter/enhanceindexings3exporter ./enhanceindexings3exporter
+ADD ./enhance-indexing-s3-exporter/index ./index
 ADD ./builder-config.yaml ./
 RUN go install go.opentelemetry.io/collector/cmd/builder@v0.132.0
 RUN builder --config builder-config.yaml

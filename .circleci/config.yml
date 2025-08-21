@@ -37,6 +37,13 @@ jobs:
     resource_class: arm.medium
     steps:
       - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "SHA256:tAQ38CPmQnY3au8Td00jaHKtRutqvfPmCMcaM1z9x6Y"
+      - run:
+          name: Checkout indexer
+          command: |
+            git clone git@github.com:honeycombio/enhance-indexing-s3-exporter.git
       - setup-docker-ecr-login
       - when:
           condition: << pipeline.git.tag >>
@@ -69,6 +76,13 @@ jobs:
     executor: docker-executor
     steps:
       - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "SHA256:tAQ38CPmQnY3au8Td00jaHKtRutqvfPmCMcaM1z9x6Y"
+      - run:
+          name: Checkout indexer
+          command: |
+            git clone git@github.com:honeycombio/enhance-indexing-s3-exporter.git
       - setup-docker-ecr-login
       - when:
           condition: << pipeline.git.tag >>
