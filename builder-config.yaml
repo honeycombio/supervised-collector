@@ -26,7 +26,7 @@ processors:
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/redactionprocessor v0.132.0
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/transformprocessor v0.132.0
   - gomod: github.com/honeycombio/opentelemetry-collector-configs/usageprocessor v0.0.0-20250821215019-48f07307dc74
-  - gomod: github.com/honeycombio/opentelemetry-collector-symbolicator/symbolicatorprocessor v0.0.9
+  - gomod: github.com/honeycombio/opentelemetry-collector-symbolicator/sourcemapprocessor v0.0.10
 
 receivers:
   - gomod: go.opentelemetry.io/collector/receiver/nopreceiver v0.132.0
