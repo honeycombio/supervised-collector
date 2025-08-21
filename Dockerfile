@@ -2,7 +2,7 @@ FROM golang:1.24 AS build
 WORKDIR /go/src
 
 ADD ./builder-config.yaml ./
-RUN go install go.opentelemetry.io/collector/cmd/builder@v0.132.4
+RUN go install go.opentelemetry.io/collector/cmd/builder@v0.132.0
 RUN builder --config builder-config.yaml
 
 # use the official upstream image for the opampsupervisor
