@@ -18,7 +18,7 @@ exporters:
   - gomod: go.opentelemetry.io/collector/exporter/otlpexporter v0.132.0
   - gomod: go.opentelemetry.io/collector/exporter/otlphttpexporter v0.132.0
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/exporter/awss3exporter v0.132.0
-  - gomod: github.com/honeycombio/enhance-indexing-s3-exporter/enhanceindexings3exporter v0.0.4
+  - gomod: github.com/honeycombio/enhance-indexing-s3-exporter/enhanceindexings3exporter v0.0.5
 
 processors:
   - gomod: go.opentelemetry.io/collector/processor/memorylimiterprocessor v0.132.0
