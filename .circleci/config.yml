@@ -44,6 +44,8 @@ jobs:
           name: Checkout indexer
           command: |
             git clone git@github.com:honeycombio/enhance-indexing-s3-exporter.git
+            git fetch
+            git checkout tyler.investigate-memory
       - setup-docker-ecr-login
       - when:
           condition: << pipeline.git.tag >>
