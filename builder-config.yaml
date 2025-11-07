@@ -4,6 +4,7 @@ dist:
   description: Supervised Collector
   version: 0.0.12
   output_path: ./supervised-collector
+  cgo_enabled: true
 
 extensions:
   - gomod: go.opentelemetry.io/collector/extension/zpagesextension v0.139.0
