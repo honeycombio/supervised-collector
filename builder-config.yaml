@@ -2,7 +2,7 @@ dist:
   module: github.com/honeycombio/opentelemetry-collector-configs
   name: supervised-collector
   description: Supervised Collector
-  version: 0.0.12
+  version: 0.1.1
   output_path: ./supervised-collector
   cgo_enabled: true
 
