@@ -7,40 +7,41 @@ dist:
   cgo_enabled: true
 
 extensions:
-  - gomod: go.opentelemetry.io/collector/extension/zpagesextension v0.139.0
-  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/extension/healthcheckextension v0.139.0
-  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/extension/opampextension v0.139.0
-  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/extension/pprofextension v0.139.0
-  - gomod: github.com/honeycombio/opentelemetry-collector-configs/honeycombextension v0.0.0-20251107145434-4ad18bb567ec
+  - gomod: go.opentelemetry.io/collector/extension/zpagesextension v0.143.0
+  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/extension/healthcheckextension v0.143.0
+  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/extension/opampextension v0.143.0
+  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/extension/pprofextension v0.143.0
+  - gomod: github.com/honeycombio/opentelemetry-collector-configs/honeycombextension v0.0.0-20260112185845-6e6281f3b129
 
 exporters:
-  - gomod: go.opentelemetry.io/collector/exporter/debugexporter v0.139.0
-  - gomod: go.opentelemetry.io/collector/exporter/nopexporter v0.139.0
-  - gomod: go.opentelemetry.io/collector/exporter/otlpexporter v0.139.0
-  - gomod: go.opentelemetry.io/collector/exporter/otlphttpexporter v0.139.0
-  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/exporter/awss3exporter v0.139.0
-  - gomod: github.com/honeycombio/enhance-indexing-s3-exporter/enhanceindexings3exporter v0.0.8
+  - gomod: go.opentelemetry.io/collector/exporter/debugexporter v0.143.0
+  - gomod: go.opentelemetry.io/collector/exporter/nopexporter v0.143.0
+  - gomod: go.opentelemetry.io/collector/exporter/otlpexporter v0.143.0
+  - gomod: go.opentelemetry.io/collector/exporter/otlphttpexporter v0.143.0
+  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/exporter/awss3exporter v0.143.0
+  - gomod: github.com/honeycombio/enhance-indexing-s3-exporter/enhanceindexings3exporter v0.0.9
 
 processors:
-  - gomod: go.opentelemetry.io/collector/processor/memorylimiterprocessor v0.139.0
-  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/filterprocessor v0.139.0
-  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/logdedupprocessor v0.139.0
-  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/redactionprocessor v0.139.0
-  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/transformprocessor v0.139.0
-  - gomod: github.com/honeycombio/opentelemetry-collector-configs/usageprocessor v0.0.0-20251107145434-4ad18bb567ec
-  - gomod: github.com/honeycombio/opentelemetry-collector-symbolicator/sourcemapprocessor v0.0.12
+  - gomod: go.opentelemetry.io/collector/processor/memorylimiterprocessor v0.143.0
+  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/filterprocessor v0.143.0
+  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/logdedupprocessor v0.143.0
+  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/redactionprocessor v0.143.0
+  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/processor/transformprocessor v0.143.0
+  - gomod: github.com/honeycombio/opentelemetry-collector-configs/usageprocessor v0.0.0-20260112185845-6e6281f3b129
+  - gomod: github.com/honeycombio/opentelemetry-collector-symbolicator/sourcemapprocessor v1.0.3
+  - gomod: github.com/honeycombio/opentelemetry-collector-symbolicator/dsymprocessor v1.0.1
+  - gomod: github.com/honeycombio/opentelemetry-collector-symbolicator/proguardprocessor v1.0.1
 
 receivers:
-  - gomod: go.opentelemetry.io/collector/receiver/nopreceiver v0.139.0
-  - gomod: go.opentelemetry.io/collector/receiver/otlpreceiver v0.139.0
+  - gomod: go.opentelemetry.io/collector/receiver/nopreceiver v0.143.0
+  - gomod: go.opentelemetry.io/collector/receiver/otlpreceiver v0.143.0
 
 providers:
-  - gomod: go.opentelemetry.io/collector/confmap/provider/envprovider v1.45.0
-  - gomod: go.opentelemetry.io/collector/confmap/provider/fileprovider v1.45.0
+  - gomod: go.opentelemetry.io/collector/confmap/provider/envprovider v1.49.0
+  - gomod: go.opentelemetry.io/collector/confmap/provider/fileprovider v1.49.0
 
 # When using `make genotelcontribcol`, a `replaces` section is appended to this
 # file before passing it to OCB, to ensure that local versions are used for all
 # Contrib modules.
 replaces:
-  - github.com/honeycombio/opentelemetry-collector-configs/usageprocessor => github.com/honeycombio/opentelemetry-collector-configs/usageprocessor v0.0.0-20251107145434-4ad18bb567ec
-  - github.com/openshift/api v3.9.0+incompatible => github.com/openshift/api v0.0.0-20180801171038-322a19404e37
+  - github.com/honeycombio/opentelemetry-collector-configs/usageprocessor => github.com/honeycombio/opentelemetry-collector-configs/usageprocessor v0.0.0-20260112185845-6e6281f3b129
