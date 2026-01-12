@@ -1,5 +1,10 @@
 # supervised-collector changelog
 
+## 0.1.2 2026-01-12
+
+### Maintenance
+- maint: bump dependencies (#27) | @TylerHelmuth
+
 ## 0.1.1 2025-07-15
 
 ### Feature
