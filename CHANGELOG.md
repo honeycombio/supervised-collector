@@ -1,5 +1,11 @@
 # supervised-collector changelog
 
+## 0.1.3 2026-01-20
+
+### Feature
+
+- feat: add forward connector to builder config (#29) | @MikeGoldsmith
+
 ## 0.1.2 2026-01-12
 
 ### Maintenance
